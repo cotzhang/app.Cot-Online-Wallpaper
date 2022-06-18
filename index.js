@@ -27,7 +27,6 @@ function spawnWindow(){
 		frame: false,
 		resizable:false,
 		show:false,
-		transparent:true,
 		hasShadow:true,
 		webPreferences:{
 	  		nodeIntegration: true, 

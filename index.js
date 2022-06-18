@@ -68,9 +68,13 @@ function spawnWindow(){
     const contextMenu = electron.Menu.buildFromTemplate(trayMenuTemplate);
     appTray.setToolTip("Cot Online Wallpaper");
     appTray.setContextMenu(contextMenu);
-    if(store.get('firstrun')!="no"){
-    	win.show();
-		store.set('firstrun', 'no');
-    }
+    
+    win.once('ready-to-show', () => {
+    	if(store.get('firstrun')!="no"){
+	    	win.show();
+	    	store.set('firstrun', 'no');
+    	}
+	 });
+		
 	return win;
 }

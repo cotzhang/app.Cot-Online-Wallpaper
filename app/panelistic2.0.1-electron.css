@@ -172,7 +172,7 @@ input:hover,textarea:hover{
 	background-color: #eeeeee88;
 }
 
-input:active,,textarea:active{
+input:active,textarea:active{
 	border: 1px solid #aaaaaa99;
 	background-color: #cccccc88;
 }

@@ -1,7 +1,10 @@
 {
   "dependencies": {
     "@electron/remote": "^2.0.8",
-    "glasstron": "^0.1.1"
+    "electron-store": "^8.0.2",
+    "glasstron": "^0.1.1",
+    "request": "^2.88.2",
+    "wallpaper": "^5.0.1"
   },
   "name": "com.cot.wallpaper.desktop",
   "version": "1.0.0",
@@ -20,7 +23,8 @@
     "url": "git+https://github.com/cotzhang/COW_Cot-Online-Wallpaper.git"
   },
   "keywords": [
-    "cot","wallpaper"
+    "cot",
+    "wallpaper"
   ],
   "author": "Cot Zhang",
   "license": "ISC",

@@ -3,47 +3,156 @@
 <head>
 	<meta charset="utf-8">
 	<link rel="stylesheet" href="panelistic2.0.1-electron.css">
-	<title>Cot Desktop Application Framework</title>
+	<title>Cot Online Wallpaper</title>
 	<style type="text/css"></style>
 	<script type="text/javascript">
 		let $ = document.querySelector;
 		const electron = require("electron");
+		let resr=null
+		let autotime = -1
 		window.onload=function() {
 			document.getElementById('window_title').innerText=document.title;
+			let freq = document.getElementById('freq');
+			let resr = localStorage.getItem('res');
+			if(resr){
+				res.value=resr
+			}
+			if(state=='true'){
+				document.getElementById('enable').checked = "true";
+			}
+			res = document.getElementById('res')
+			blurtext = document.getElementById('blurtext');
+			if (blurtext) {blurtext.value=bluramount}
+			let statecheck = document.getElementById('enable');
+			statecheck.onchange = function() {
+				if(statecheck.checked) refresh()
+				localStorage.setItem('state',this.checked)
+			}
+			freq.onchange = function() {
+				localStorage.setItem('freq',freq.selectedIndex)
+				switch(freq.selectedIndex){
+					case 0:
+						autotime=30000
+						break;
+					case 1:
+						autotime=60000
+						break;
+					case 2:
+						autotime=360000
+						break;
+					case 3:
+						autotime=720000
+						break;
+					case 4:
+						autotime=2160000
+						break;
+					case 5:
+						autotime=4320000
+						break;
+					case 6:			
+						autotime=12960000
+						break;	
+					default:
+						autotime=-1
+						break;
+				}
+				autochange()
+			}
+			if(freqprev==null){
+				freq[2].selected=true;
+			}else{
+				freq[freqprev].selected=true;
+			}
+			freq.onchange()
+
+		}
+		function autochange() {
+			if (autotime>0) {
+				setTimeout(function() {
+					refresh()
+					autochange()
+				},autotime)
+			}
 		}
 		const remote = require("@electron/remote");
+		//get prev settings
+		let state = localStorage.getItem('state');
+		let freqprev = localStorage.getItem('freq');
+		let bluramount = localStorage.getItem('bluramount');
+		//wallpaper
+		var fs = require("fs");
+		var path = require("path");
+		var request = require("request");
+		const wallpaper = require('wallpaper');
+		function refresh() {
+			let stream = fs.createWriteStream(path.join(__dirname, "temp.jpg"));
+			let blurstr = ""
+			if(blurtext.value!=""&&blurtext.value!=0){
+				blurstr="?blur="+blurtext.value
+			}
+		  	request(`https://picsum.photos/${res.value}${blurstr}`).pipe(stream).on("close", function (err) {
+		  	  	if(!err){
+		  	  		setTimeout(function() {setwallpaper()},1000)
+		  	  	}else{
+		  	  		alert("Something wrong occured");
+		  	  	}
+		  	});
+		}
+		function setwallpaper() {
+			(async () => {
+				await wallpaper.set(path.join(__dirname,"temp.jpg"));
+			})();
+		}
+		electron.ipcRenderer.on('refresh', (event, message) => {
+	      refresh()
+	    })
 	</script>
 </head>
 <body>
 	<div id="panelistic_window" ondragstart="return false;">
 		<div id="panelistic_titlebar">
 			<span id="window_title"></span>
-			<img src="src/btn/window/Close.svg" class="panelistic_controlbtn" id="controlbtn_closebtn" onclick="window.close();">
+			<img src="src/btn/window/Close.svg" class="panelistic_controlbtn" id="controlbtn_closebtn" onclick="remote.getCurrentWindow().hide();">
 			<img src="src/btn/window/min.png" class="panelistic_controlbtn" id="controlbtn_minbtn" onclick="remote.getCurrentWindow().minimize()">
 		</div>
-		<div id="panelistic_content">
-			<h1>Page Title</h1>
-			<h6>This is a subtitle which has a small font.</h6>
+		<div id="panelistic_content" style="overflow: hidden;">
+			<h1>Configuration</h1>
+			<h6>Settings of online wallpaper</h6>
 			<span class="panelistic_placeholder"></span>
 			<div class="panelistic_panel">
-				<input type="text" value="This is an input">
-				<input type="button" value="Button"><br>
+				<h6>Notice: The window will hide to the taskbar when it is run again</h6>
 				<span class="panelistic_placeholder"></span>
-				<select>
-					<option>Dropbox 1</option>
-					<option>Dropbox 2</option>
-					<option>Dropbox 3</option>
-					<option>Dropbox 4</option>
+				<div class="panelistic_checkbox"><input type="checkbox" id="enable"><span class="panelistic_checkbox_text">Online wallpaper service</span></div>
+				<span class="panelistic_placeholder"></span>
+				<h6>Determine the frequency and the resolution</h6>
+				<span class="panelistic_placeholder"></span>
+				<select id="freq">
+					<option>30s</option>
+					<option>1m</option>
+					<option>5m</option>
+					<option>10m</option>
+					<option>30m</option>
+					<option>1h</option>
+					<option>3h</option>
+				</select>
+				<select id="res" onclick="localStorage.setItem('res',this.value)">
+					<option>3840/2160</option>
+					<option>1920/1080</option>
+					<option>1680/1050</option>
+					<option>1600/900</option>
+					<option>1440/900</option>
+					<option>1440/1050</option>
+					<option>1366/768</option>
+					<option>1360/768</option>
+					<option>1280/1024</option>
+					<option>1280/960</option>
+					<option>1280/768</option>
+					<option>1024/768</option>
+					<option>1280/720</option>
+					<option>800/600</option>
 				</select>
 				<span class="panelistic_placeholder"></span>
-				<div class="panelistic_checkbox"><input type="checkbox"><span class="panelistic_checkbox_text">Checkbox Text</span></div>
-				<span class="panelistic_placeholder"></span>
-				<textarea>Textarea test</textarea>
-			</div>
-			<div class="panelistic_panel">
-				<img src="src/img/example.jpg">
-				<span class="panelistic_placeholder"></span>
-				<div class="panelistic_code"><code>This is an example of the code area<br>12345<br>67890</code></div>
+				<input type="button" value="Refresh wallpaper now" onclick="refresh()">&nbsp;<input type="number" placeholder="Blur amount 0-10" id="blurtext" min="0" max="10" style="width: 150px" onchange="localStorage.setItem('bluramount',this.value)">&nbsp;<input type="button" value="Exit" onclick="remote.app.exit()"><br>
 			</div>
 		</div>
 	</div>

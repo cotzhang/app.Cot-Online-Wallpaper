@@ -28,6 +28,11 @@
 				if(statecheck.checked) refresh()
 				localStorage.setItem('state',this.checked)
 			}
+			if(freqprev==null){
+				freq[2].selected=true;
+			}else{
+				freq[freqprev].selected=true;
+			}
 			freq.onchange = function() {
 				localStorage.setItem('freq',freq.selectedIndex)
 				switch(freq.selectedIndex){
@@ -58,21 +63,16 @@
 				}
 				autochange()
 			}
-			if(freqprev==null){
-				freq[2].selected=true;
-			}else{
-				freq[freqprev].selected=true;
+			function autochange() {
+				if (autotime>0 && statecheck.checked) {
+					setTimeout(function() {
+						refresh()
+						autochange()
+					},autotime)
+				}
 			}
 			freq.onchange()
 
-		}
-		function autochange() {
-			if (autotime>0) {
-				setTimeout(function() {
-					refresh()
-					autochange()
-				},autotime)
-			}
 		}
 		const remote = require("@electron/remote");
 		//get prev settings
